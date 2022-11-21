@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"
+    />
+    <meta
+      name="description"
+      content="Drag a link to reconnect it. Nodes have custom Adornments for selection, resizing, and rotating.  The Palette includes links."
+    />
+    <link rel="stylesheet" href="./style.css" />
+
+    <title>DEVS</title>
+  </head>
+
+  <body>
+    <div>
+      <script src="https://unpkg.com/gojs/release/go.js"></script>
+      <script type="module" src="./app.js"></script>
+      <script type="module" src="./transform.js"></script>
+
+      <div style="float: right">
+        <div>
+          <button id="SaveButton">Convert to JSON</button>
+          <button id="loadButton">Load</button>
+          <button id="downloadButton">Download Code</button>
+        </div>
+        <textarea
+          id="mySavedModel"
+          style="width: 100%; height: 300px; display: none"
+        >
+                { "class": "go.GraphLinksModel",
+                  "copiesArrays": true,
+                  "copiesArrayObjects": true,
+                  "linkFromPortIdProperty": "fromPort",
+                  "linkToPortIdProperty": "toPort",
+                  "nodeDataArray": [
+                ],
+                  "linkDataArray": [
+                ]}
+    </textarea
+        >
+      </div>
+      <div style="width: 100%; display: flex; justify-content: space-between">
+        <div
+          id="myPaletteDiv"
+          style="
+            width: 7%;
+            margin: 0px 2px;
+            background-color: whitesmoke;
+            border: solid 1px black;
+          "
+        ></div>
+        <div
+          id="myDiagramDiv"
+          style="
+            flex-grow: 1;
+            width: 90%;
+            height: 94vh;
+            border: solid 1px black;
+            margin-right: 2px;
+          "
+        ></div>
+      </div>
+    </div>
+  </body>
+</html>

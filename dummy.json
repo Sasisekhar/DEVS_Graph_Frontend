@@ -1,0 +1,11 @@
+{
+  "class": "GraphLinksModel",
+  "copiesArrays": true,
+  "copiesArrayObjects": true,
+  "linkFromPortIdProperty": "fromPort",
+  "linkToPortIdProperty": "toPort",
+  "modelData": { "position": "-569.5 -309" },
+  "nodeDataArray": [
+  ],
+  "linkDataArray": []
+}
