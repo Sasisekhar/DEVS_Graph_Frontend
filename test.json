@@ -1,0 +1,131 @@
+{
+  "class": "GraphLinksModel",
+  "copiesArrays": true,
+  "copiesArrayObjects": true,
+  "linkFromPortIdProperty": "fromPort",
+  "linkToPortIdProperty": "toPort",
+  "modelData": { "position": "-683.2306873527665 -349.5" },
+  "nodeDataArray": [
+    {
+      "text": "*start\nTa=4",
+      "figure": "Ellipse",
+      "size": "120 113",
+      "fill": "white",
+      "key": -1,
+      "loc": "-160 -108.5",
+      "group": -4
+    },
+    {
+      "text": "process\nTa=10",
+      "figure": "Ellipse",
+      "size": "116 115",
+      "fill": "white",
+      "key": -2,
+      "loc": "282.5 -112.5",
+      "group": -4
+    },
+    {
+      "text": "finish\nTa=inf",
+      "figure": "Ellipse",
+      "size": "123 115",
+      "fill": "white",
+      "key": -3,
+      "loc": "61.5 82.5",
+      "group": -4
+    },
+    {
+      "text": "Processor",
+      "isGroup": true,
+      "color": "blue",
+      "I": [{ "id": "I1", "text": "in\nint", "color": "red" }],
+      "O": [{ "id": "O1", "text": "out\nint", "color": "red" }],
+      "key": -4,
+      "group": -6
+    },
+    {
+      "text": "IEStream\ntype=int",
+      "figure": "Rectangle",
+      "size": "90 65",
+      "fill": "white",
+      "key": -5,
+      "loc": "-550 -140",
+      "group": -6
+    },
+    {
+      "text": "top_model",
+      "isGroup": true,
+      "color": "blue",
+      "I": [],
+      "O": [{ "id": "O1", "text": "out1\nint", "color": "red" }],
+      "key": -6
+    }
+  ],
+  "linkDataArray": [
+    {
+      "points": [
+        -100, -108.5, -90, -108.5, 62.25, -108.5, 62.25, -112.5, 214.5, -112.5,
+        224.5, -112.5
+      ],
+      "color": "black",
+      "from": -1,
+      "to": -2,
+      "fromPort": "R",
+      "toPort": "L",
+      "label": "in?4"
+    },
+    {
+      "points": [
+        61.5, 25, 61.5, 15, 61.5, -15, 282.5, -15, 282.5, -45, 282.5, -55
+      ],
+      "color": "black",
+      "from": -3,
+      "to": -2,
+      "fromPort": "T",
+      "toPort": "B",
+      "label": "in?2"
+    },
+    {
+      "points": [
+        340.5, -112.5, 350.5, -112.5, 350.5, 82.5, 241.75, 82.5, 133, 82.5, 123,
+        82.5
+      ],
+      "dash_array": [6, 3],
+      "from": -2,
+      "to": -3,
+      "fromPort": "R",
+      "toPort": "R",
+      "label": "out!1"
+    },
+    {
+      "points": [
+        -505, -140, -495, -140, -392.88071187457695, -140, -392.88071187457695,
+        -8.500000000000007, -290.76142374915395, -8.500000000000007,
+        -280.76142374915395, -8.500000000000007
+      ],
+      "color": "red",
+      "arrow_color": "red",
+      "fill_arrow": "red",
+      "from": -5,
+      "to": -4,
+      "fromPort": "R",
+      "toPort": "I1",
+      "label": ""
+    },
+    {
+      "points": [
+        425.2713013736655, -25.375448608398443, 435.2713013736655,
+        -25.375448608398443, 435.2713013736655, -97.4000015258789,
+        505.82442739332726, -97.4000015258789, 505.82442739332726,
+        -23.875448608398443, 495.82442739332726, -23.875448608398443
+      ],
+      "color": "red",
+      "arrow_color": "red",
+      "fill_arrow": "red",
+      "from": -4,
+      "to": -6,
+      "fromPort": "O1",
+      "toPort": "O1",
+      "label": ""
+    }
+  ]
+}

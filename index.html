@@ -11,26 +11,30 @@
       content="Drag a link to reconnect it. Nodes have custom Adornments for selection, resizing, and rotating.  The Palette includes links."
     />
     <link rel="stylesheet" href="./style.css" />
-
+    <link rel="stylesheet" href="./custom-style.css">
     <title>DEVS</title>
   </head>
 
   <body>
     <div>
+      <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.js"
+        integrity="sha512-UNbeFrHORGTzMn3HTt00fvdojBYHLPxJbLChmtoyDwB6P9hX5mah3kMKm0HHNx/EvSPJt14b+SlD8xhuZ4w9Lg=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+      ></script>
       <script src="https://unpkg.com/gojs/release/go.js"></script>
       <script type="module" src="./app.js"></script>
       <script type="module" src="./transform.js"></script>
 
       <div style="float: right">
         <div>
-          <button id="SaveButton">Convert to JSON</button>
-          <button id="loadButton">Load</button>
-          <button id="downloadButton">Download Code</button>
+          <button id="saveButton">Convert to JSON</button>
+          
+          <button id="loadPopup" data-modal="modal-info">Upload</button>
+          <button id="downloadPopup" data-modal="file-info">Download Code</button>
         </div>
-        <textarea
-          id="mySavedModel"
-          style="width: 100%; height: 300px; display: none"
-        >
+        <textarea id="mySavedModel" style="width: 100%; height: 300px; display: none;">
                 { "class": "go.GraphLinksModel",
                   "copiesArrays": true,
                   "copiesArrayObjects": true,
@@ -63,6 +67,24 @@
             margin-right: 2px;
           "
         ></div>
+      </div>
+    </div>
+    <div class="modal" id="modal-info">
+      <div class="modal-bg modal-exit"></div>
+      <div class="modal-container">
+        <h4 style="color: blue">Choose Model JSON to Upload</h4>
+        <input type="file" id="formFile">
+        <button id="loadButton">Load</button>
+        <a class="modal-close modal-exit">X</a>
+      </div>
+    </div>
+    <div class="modal" id="file-info">
+      <div class="modal-bg modal-exit"></div>
+      <div class="modal-container">
+        <h4 style="color: blue">Model Information</h4>
+        <input type="text" id="modalname">
+        <button id="downloadButton">Download</button>
+        <a class="modal-close modal-exit">X</a>
       </div>
     </div>
   </body>

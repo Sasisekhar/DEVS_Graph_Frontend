@@ -1,9 +1,8 @@
 import { save } from './app.js';
 
 let downloadButton = document.getElementById("downloadButton");
-downloadButton.addEventListener("click",download);
-
-function download() {
+downloadButton.addEventListener("click", generate);
+function generate() {
     let data = transformData(save());
     fetch('http://localhost:8080/cadmium/generate', {
         method: 'POST',
@@ -11,32 +10,13 @@ function download() {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
-    })
-        .then((res) => {
-            return res.blob();
-        })
-        .then((blob) => {
-            let id = crypto.randomUUID();
-            var file = new File([blob], id + ".zip");
-            var fileURL = URL.createObjectURL(file);
-
-            // create <a> tag dinamically
-            var fileLink = document.createElement('a');
-            fileLink.href = fileURL;
-
-            // it forces the name of the downloaded file
-            fileLink.download = id + '.zip';
-
-            // triggers the click event
-            fileLink.click();
-        })
-        .catch((e) => console.log(e));
+    }).then((res) => {
+        return res.blob();
+    }).then((blob) => {
+        saveAs(blob, document.getElementById("modalname").value + ".zip")
+    }).catch((e) => console.log(e));
 }
 
-
-//Temp transformations:
-
-// let data = { "class": "GraphLinksModel", "copiesArrays": true, "copiesArrayObjects": true, "linkFromPortIdProperty": "fromPort", "linkToPortIdProperty": "toPort", "modelData": { "position": "706.9363032122078 439.63213305831937" }, "nodeDataArray": [{ "text": "*start\nTa=4", "figure": "Ellipse", "size": "85 85", "fill": "white", "key": -1, "loc": "1447.5 723.227", "group": -4 }, { "text": "process\nTa=10", "figure": "Ellipse", "size": "115 112", "fill": "white", "key": -2, "loc": "1877.5 723.227", "group": -4 }, { "text": "finish\nTa=7", "figure": "Ellipse", "size": "85 85", "fill": "white", "key": -3, "loc": "1585.54835552058 888.6092855600116", "group": -4 }, { "text": "Processor", "isGroup": true, "color": "blue", "I": [{ "id": "I1", "text": "in\nint", "color": "red" }], "O": [], "key": -4, "group": -6 }, { "text": "IEStream\ntype=int", "figure": "Rectangle", "size": "90 65", "fill": "white", "key": -5, "loc": "1095 612.4999999999986", "group": -6 }, { "text": "top_model", "isGroup": true, "color": "blue", "I": [], "O": [], "key": -6 }], "linkDataArray": [{ "points": [1447.5, 680.727, 1447.5, 670.727, 1447.5, 657.227, 1662.5, 657.227, 1877.5, 657.227, 1877.5, 667.227], "color": "black", "from": -1, "to": -2, "fromPort": "T", "toPort": "T", "label": "in?4" }, { "from": -3, "to": -2, "fromPort": "", "toPort": "", "points": [1628.04835552058, 888.6092855600116, 1638.04835552058, 888.6092855600116, 1724.02417776029, 888.6092855600116, 1724.02417776029, 723.2269999999999, 1810, 723.2269999999999, 1820, 723.2269999999999], "label": "in?2" }, { "points": [1935, 723.227, 1945, 723.227, 1945, 888.6092855600117, 1791.52417776029, 888.6092855600117, 1638.04835552058, 888.6092855600117, 1628.04835552058, 888.6092855600117], "dash_array": [6, 3], "from": -2, "to": -3, "fromPort": "R", "toPort": "R", "label": "out!1" }, { "points": [1543.04835552058, 888.6092855600116, 1533.04835552058, 888.6092855600116, 1447.5, 888.6092855600116, 1447.5, 832.1681427800058, 1447.5, 775.7269999999999, 1447.5, 765.7269999999999], "dash_array": [6, 3], "from": -3, "to": -1, "fromPort": "L", "toPort": "B", "label": "out!6" }, { "points": [1140, 612.5, 1150, 612.5, 1242.1192881254233, 612.5, 1242.1192881254233, 611.2873551765252, 1334.238576250846, 611.2873551765252, 1344.238576250846, 611.2873551765252], "color": "red", "arrow_color": "red", "fill_arrow": "red", "from": -5, "to": -4, "fromPort": "R", "toPort": "I1", "label": "" }] };
 function transformData(data) {
     data = JSON.parse(data);
     let nodeData = data.nodeDataArray;
@@ -91,13 +71,25 @@ function transformData(data) {
                 components.push("IEStream");
             coupled_obj['components'] = components;
             if (m.text === "top_model") {
-                coupled_obj.top = { name: m.text, out_port: 'outPort' };
-                request_body.top = { name: m.text, out_port: 'outPort' };
+                coupled_obj.top = { name: m.text, out_port: m.O[0].text.split("\n")[0] };
+                request_body.top = { name: m.text, out_port: m.O[0].text.split("\n")[0] };
             }
             let links = linkData.filter(l => {
-                return l.color == 'red' && (coupled_id[m.key].includes(l.from) || coupled_id[m.key].includes(l.to))
+                return l.color == 'red' &&
+                    ((coupled_id[m.key].includes(l.from) && coupled_id[m.key].includes(l.to)) ||
+                        (l.from == m.key && coupled_id[m.key].includes(l.to)) ||
+                        (l.to == m.key && coupled_id[m.key].includes(l.from)))
             })
             let couplings = [];
+            let inports = [], outports = [];
+            m.I.forEach(d => {
+                let port = d.text.split("\n");
+                inports.push({ name: port[0], type: port[1] });
+            })
+            m.O.forEach(d => {
+                let port = d.text.split("\n");
+                outports.push({ name: port[0], type: port[1] });
+            })
             links.forEach(l => {
                 let from_key = l.from;
                 let to_key = l.to;
@@ -106,19 +98,34 @@ function transformData(data) {
                 let fname = from_model.text.split("\n")[0];
                 let tname = to_model.text.split("\n")[0];
                 let from_p, to_p;
+
                 if (fname === "IEStream")
                     from_p = 'out';
                 else {
-                    from_p = l.fromPort;
+                    // from_p = l.fromPort;
                     from_model.O.forEach(ports => {
                         if (ports.id === l.fromPort)
-                            from_p = ports.text;
+                            from_p = ports.text.split("\n")[0];
                     })
+                    if (from_p === undefined) {
+                        from_model.I.forEach(ports => {
+                            if (ports.id === l.fromPort)
+                                from_p = ports.text.split("\n")[0];
+                        })
+                        fname = "";
+                    }
                 }
                 to_model.I.forEach(ports => {
                     if (ports.id === l.toPort)
-                        to_p = ports.text;
+                        to_p = ports.text.split("\n")[0];
                 })
+                if (to_p === undefined) {
+                    to_model.O.forEach(ports => {
+                        if (ports.id === l.toPort)
+                            to_p = ports.text.split("\n")[0];
+                    })
+                    tname = ""
+                }
                 let coupling_obj = {
                     from_model: fname,
                     to_model: tname,
@@ -127,6 +134,8 @@ function transformData(data) {
                 };
                 couplings.push(coupling_obj);
             })
+            coupled_obj.inports = inports;
+            coupled_obj.outports = outports;
             coupled_obj.couplings = couplings;
             coupled.push(coupled_obj);
         }
@@ -141,7 +150,8 @@ function transformData(data) {
             let sname = state_obj.text.split("\n");
             if (sname[0].charAt(0) === '*') {
                 sname[0] = sname[0].substring(1);
-                atomic_obj['initial_state'] = sname[0]
+                atomic_obj['initial_state'] = sname[0];
+                model_dict[d].text = sname[0] + "\n" + sname[1];
             }
             states[sname[0]] = sname[1].split("=")[1] == "inf" ? "inf" : parseInt(sname[1].split("=")[1]);
         })
@@ -193,3 +203,21 @@ function transformData(data) {
     console.log(request_body);
     return request_body;
 }
+
+
+const modals = document.querySelectorAll('[data-modal]');
+
+modals.forEach(function (trigger) {
+    trigger.addEventListener('click', function (event) {
+        event.preventDefault();
+        const modal = document.getElementById(trigger.dataset.modal);
+        modal.classList.add('open');
+        const exits = modal.querySelectorAll('.modal-exit');
+        exits.forEach(function (exit) {
+            exit.addEventListener('click', function (event) {
+                event.preventDefault();
+                modal.classList.remove('open');
+            });
+        });
+    });
+});

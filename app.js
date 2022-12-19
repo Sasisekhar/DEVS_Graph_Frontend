@@ -59,7 +59,7 @@ function init() {
       "rotatingTool.snapAngleMultiple": 15,
       "rotatingTool.snapAngleEpsilon": 15,
       "undoManager.isEnabled": true,
-      "commandHandler.archetypeGroupData": { text: "Model", isGroup: true, color: "blue", I: [], O: [] },
+      "commandHandler.archetypeGroupData": { text: "Model", isGroup: true, color: "black", I: [], O: [] },
       // layout: $(go.ForceDirectedLayout, { defaultSpringLength: 10, maxIterations: 300 })
     }
   );
@@ -162,7 +162,7 @@ function init() {
       // get the Array of port data to be modified
       // const arr = ;
       // node.data[side].push({id: name});
-      myDiagram.model.insertArrayItem(node.data[side], -1, { id: name, text: name, color: "red" });
+      myDiagram.model.insertArrayItem(node.data[side], -1, { id: name, text: name, color: "black" });
       // console.log("adding port to ", node.data[side]);
       // if (arr) {
       //   // create a new port data object
@@ -452,16 +452,18 @@ function init() {
       $(
         go.Panel,
         "Auto",
-        // new go.Binding("visible", "isSelected").ofObject(),
+        // new go.Binding("visible", "text==''").ofObject(),
+        new go.Binding("visible", "label", function(t) { return !!t; }),
         $(
           go.Shape,
           "RoundedRectangle", // the link shape
-          { fill: "grey", stroke: null }
+          { fill: "white", stroke: null }
         ),
 
         $(
           go.TextBlock,
           {
+            visible: true,
             text: "label",
             editable: true,
             textAlign: "center",
@@ -470,8 +472,9 @@ function init() {
             segmentFraction: 0.5,
           },
           new go.Binding("text", "label").makeTwoWay(),
-          BindSelection("stroke", "white", "black"),
-          BindSelection("background", "grey", null)
+          new go.Binding("visible", "label", function(t) { return !!t; }),
+          BindSelection("stroke", "black", "black"),
+          BindSelection("background", null, null)
         )
       ),
       { // this tooltip Adornment is shared by all links
@@ -541,7 +544,7 @@ function init() {
         {
           column: 0,
           itemTemplate:
-            $(go.Panel,"Horizontal",
+            $(go.Panel, "Horizontal",
               {
                 margin: new go.Margin(10, 0, 0, 2),
                 contextMenu: $("ContextMenu",
@@ -560,9 +563,9 @@ function init() {
                 new go.Binding("stroke", "color")
               ),
               $(go.Shape,
-                { toLinkable: true, strokeWidth: 0, width: 8, height: 8 },
+                { toLinkable: true,fromLinkable:true, strokeWidth: 0, width: 8, height: 8 },
                 new go.Binding("portId", "id")),
-              
+
             )
         }
       ),
@@ -570,9 +573,9 @@ function init() {
         { column: 1 },
         $(go.Shape, "RoundedRectangle",
           {
-            fill: "rgba(128,128,128,0.2)",
+            fill: "white",
             strokeWidth: 3,
-            stroke: "gray",
+            stroke: "black",
             strokeWidth: 3,
           },
           // new go.Binding("stroke", "color"),
@@ -732,7 +735,8 @@ function init() {
           go.Shape, // the arrowhead
           { toArrow: "Standard", stroke: "black", fill: "black" },
           new go.Binding("stroke", "arrow_color"),
-          new go.Binding("fill", "fill_arrow")
+          new go.Binding("fill", "fill_arrow"),
+          new go.Binding("text", "label")
         )
       ),
       model: new go.GraphLinksModel(
@@ -766,8 +770,9 @@ function init() {
               new go.Point(85, 0)
             ]),
             color: "red",
-            arrow_color: "red",
-            fill_arrow: "red"
+            arrow_color: "black",
+            fill_arrow: "white",
+            label: "",
           },
           {
             points: new go.List(/*go.Point*/).addAll([
@@ -783,22 +788,44 @@ function init() {
 }
 
 
-let saveButton = document.getElementById("SaveButton");
+let saveButton = document.getElementById("saveButton");
 let loadButton = document.getElementById("loadButton");
-loadButton.addEventListener("click",load);
-saveButton.addEventListener("click", save);
+loadButton.addEventListener("click", load);
+saveButton.addEventListener("click", downloadModel);
 // Show the diagram's model in JSON format that the user may edit
 export function save() {
+
   saveDiagramProperties(); // do this first, before writing to JSON
   document.getElementById("mySavedModel").value = myDiagram.model.toJson();
   myDiagram.isModified = false;
+
   return myDiagram.model.toJson();
 }
+
+function downloadModel() {
+  var blob = new Blob([myDiagram.model.toJson()],
+    { type: "application/json;charset=utf-8" });
+  saveAs(blob, "model.json");
+}
 function load() {
-  myDiagram.model = go.Model.fromJson(
-    document.getElementById("mySavedModel").value
-  );
+  let file = document.getElementById("formFile").files[0];
+  var reader = new FileReader();
+  if (file !== undefined) {
+    reader.onloadend = function () {
+
+      myDiagram.model = go.Model.fromJson(reader.result);
+
+    }
+    reader.readAsText(file);
+  }
+  else {
+    myDiagram.model = go.Model.fromJson(
+      document.getElementById("mySavedModel").value
+    );
+  }
+  
   loadDiagramProperties(); // do this after the Model.modelData has been brought into memory
+  
 }
 
 function saveDiagramProperties() {

@@ -1,0 +1,48 @@
+.modal {
+    position: fixed;
+    width: 150vw;
+    height: 100vh;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    top: 0;
+    left: -10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000000;
+    padding-right: 40%;
+    /* padding-bottom: 30%; */
+  }
+  .modal.open {
+    visibility: visible;
+    opacity: 1;
+    transition-delay: 0s;
+  }
+  .modal-bg {
+    position: absolute;
+    background: rgb(173, 174, 174);
+    width: 100%;
+    height: 100%;
+    opacity: 0.6;
+  }
+  .modal-container {
+    border-radius: 10px;
+    background: #fff;
+    position: relative;
+    padding: 30px;
+    width: 30%;
+    height: 25%;
+  }
+  .modal-close {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    outline: none;
+    appearance: none;
+    color: rgb(7, 7, 7);
+    background: none;
+    border: 0px;
+    font-weight: bold;
+    cursor: pointer;
+  }
