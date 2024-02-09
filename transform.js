@@ -4,7 +4,7 @@ let downloadButton = document.getElementById("downloadButton");
 downloadButton.addEventListener("click", generate);
 function generate() {
     let data = transformData(save());
-    fetch('http://localhost:8080/cadmium/generate', {
+    fetch('https://devs-graph-backend.onrender.com/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
